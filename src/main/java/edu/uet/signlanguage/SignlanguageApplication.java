@@ -8,6 +8,7 @@ public class SignlanguageApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SignlanguageApplication.class, args);
+		System.out.println("tuyet voi");
 	}
 
 }
