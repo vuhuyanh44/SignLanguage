@@ -1,13 +1,14 @@
 package edu.uet.signlanguage.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements GrantedAuthority {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +27,10 @@ public class Role {
     public Role(int id, String rolename) {
         this.id = id;
         this.name = rolename;
+    }
+
+    public Role(int i) {
+        this.id = i;
     }
 
     public String getName() {
@@ -63,5 +68,10 @@ public class Role {
 
     public void setRolename(String rolename) {
         this.name = rolename;
+    }
+
+    @Override
+    public String getAuthority() {
+        return name;
     }
 }

@@ -35,6 +35,10 @@ public class User {
     @JsonManagedReference
     private Set<Sentence> sentences;
 
+    public User(int id) {
+        this.id = id;
+    }
+
     public User() {
 
     }

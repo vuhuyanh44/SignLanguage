@@ -1,5 +1,6 @@
 package edu.uet.signlanguage.security.jwt;
 
+import edu.uet.signlanguage.entity.Role;
 import edu.uet.signlanguage.repository.UserRepository;
 import edu.uet.signlanguage.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class WebSecurityConfig {
                 .authorizeRequests().requestMatchers("/api/auth/**").permitAll()
 //               .requestMatchers("/api/role/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/api/sentence/*").hasAuthority("ROLE_USER")
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());

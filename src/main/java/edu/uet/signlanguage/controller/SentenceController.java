@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/sentence")
@@ -40,6 +42,31 @@ public class SentenceController {
         sentenceRepository.save(sentenceEntity);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","add sentence successfully","")
+        );
+    }
+    @PostMapping("/phrased")
+    ResponseEntity<ResponseObject> phraseSentence(@RequestBody Sentence sentence){
+        Sentence sentence1 = new Sentence(sentence);
+        String input = sentence1.getContent();
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            // Kiểm tra ký tự có phải là ký tự Tiếng Việt không
+            if ((c >= '\u0041' && c <= '\u005A') || (c >= '\u0061' && c <= '\u007A') || (c >= '\u00C0' && c <= '\u1EF9')) {
+                result.add(String.valueOf(c));
+            }
+            // Nếu là ký tự có dấu thì lấy luôn 2 ký tự
+            else if (c >= '\u00C0' && c <= '\u1EF9') {
+                result.add(input.substring(i, i + 2));
+                i++;
+            }
+        }
+//        result.toArray(new String[0]);
+        for (int i = 0; i < result.size(); i++){
+            result.set(i,result.get(i).toLowerCase() + ".png");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK","phrased", result)
         );
     }
 
