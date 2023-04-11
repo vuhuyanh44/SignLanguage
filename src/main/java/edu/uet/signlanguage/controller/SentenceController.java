@@ -53,7 +53,22 @@ public class SentenceController {
             char c = input.charAt(i);
             // Kiểm tra ký tự có phải là ký tự Tiếng Việt không
             if ((c >= '\u0041' && c <= '\u005A') || (c >= '\u0061' && c <= '\u007A') || (c >= '\u00C0' && c <= '\u1EF9')) {
-                result.add(String.valueOf(c));
+                if(c == 'Ô'|| c == 'ô' ){
+                    result.add("o");
+                    result.add("mu");
+                }else if(c == 'Ê'|| c == 'ê'){
+                    result.add("e");
+                    result.add("mu");
+                }else if(c == 'Ơ'|| c == 'ơ'){
+                    result.add("o");
+                    result.add("rau");
+                }else if(c == 'Ư'|| c == 'ư'){
+                    result.add("u");
+                    result.add("rau");
+                }
+                else{
+                    result.add(String.valueOf(c));
+                }
             }
             // Nếu là ký tự có dấu thì lấy luôn 2 ký tự
             else if (c >= '\u00C0' && c <= '\u1EF9') {
@@ -110,7 +125,28 @@ public class SentenceController {
         System.out.println(user.getId()+user.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Get favourite list successfully", sentenceRepository.findByUserAndFavor(user,false))
+                new ResponseObject("OK","Get favourite list successfully", sentenceRepository.findByUserAndFavor(user,true))
         );
+    }
+
+    @GetMapping("/like/{id}")
+    ResponseEntity<ResponseObject> favourSentence(@PathVariable int id){
+        Sentence sentence = sentenceRepository.findById(id).orElse(null);
+        assert sentence != null;
+        sentence.setFavor(true);
+        sentenceRepository.save(sentence);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK","update successfully",sentence)
+        );
+    }
+
+    @PostMapping("/like")
+    Boolean checkFavour(@RequestBody Sentence sentence){
+        Sentence sentence1 = sentenceRepository.findByContent(sentence.getContent()).orElse(null);
+        Boolean result = false;
+        if (sentence1.getFavor() == true){
+            result = true;
+        }
+        return result;
     }
 }

@@ -11,6 +11,7 @@ import edu.uet.signlanguage.security.jwt.JwtUtils;
 import edu.uet.signlanguage.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,10 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -30,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/api/auth")
+@RequestMapping(path = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
     @Autowired
     UserRepository userRepository;
@@ -43,21 +41,21 @@ public class AuthController {
     @Autowired
     private RoleRepository roleRepository;
 
-    @PostMapping("/login")
-    public ResponseEntity<ResponseObject> authenticateUser(@Validated @RequestBody LoginData loginData) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginData.getUsername(), loginData.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtUtils.generateJwtToken(authentication);
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userPrincipal.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-        System.out.println(roles);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "User signed-in successfully!.", new LoginResponse(userPrincipal, token))
-        );
-    }
+        @PostMapping("/login")
+        public ResponseEntity<ResponseObject> authenticateUser(@Validated @RequestBody LoginData loginData) {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    loginData.getUsername(), loginData.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtUtils.generateJwtToken(authentication);
+            UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+            List<String> roles = userPrincipal.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
+            System.out.println(roles);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK", "User signed-in successfully!.", new LoginResponse(userPrincipal, token))
+            );
+        }
 
     @PostMapping("/register")
     ResponseEntity<ResponseObject> register(@Validated @RequestBody RegisterData registerData){
@@ -114,6 +112,34 @@ public class AuthController {
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK", "Register successfully", "")
+        );
+    }
+
+    @GetMapping("")
+    ResponseEntity<ResponseObject> getUser( @RequestAttribute("userID") int id) {
+        User user = userRepository.findById(id).orElse(null);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK vcl","oke",user)
+        );
+    }
+
+    @PutMapping(value = "/update/{id}")
+    ResponseEntity<ResponseObject> updateInfo(@RequestBody User user, @PathVariable int id){
+//        User user1 = userRepository.findById(id).orElse(null);
+//        if (user.getEmail() != null){
+//            user1.setEmail(user.getEmail());
+//        }
+//        if (user.getUsername() != null){
+//            user1.setUsername(user.getUsername());
+//        }
+//        if (user.getPhone() != null){
+//            user1.setPhone(user.getPhone());
+//        }
+//        System.out.println(user);
+//        System.out.println(user1);
+//        userRepository.save(user1);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK","Update user " + id + " successfully", user)
         );
     }
 }

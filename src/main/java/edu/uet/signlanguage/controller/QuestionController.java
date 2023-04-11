@@ -20,7 +20,7 @@ public class QuestionController {
                 new ResponseObject("OK","Get all question successfully", questionRepository.findAll() )
         );
     }
-    @PostMapping()
+    @PostMapping(consumes = {"application/json"})
     ResponseEntity<ResponseObject> addQuestion(@RequestBody Question question){
         Question question1 = new Question(question);
         questionRepository.save(question1);

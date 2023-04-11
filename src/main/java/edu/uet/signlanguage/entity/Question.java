@@ -1,5 +1,6 @@
 package edu.uet.signlanguage.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -15,7 +16,7 @@ public class Question {
     private String content;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonBackReference
     private Set<Answer> answers;
     public Question(Question question){
         this.content = question.getContent();

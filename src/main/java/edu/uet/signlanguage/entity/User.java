@@ -17,12 +17,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
     private String password;
 
+    private String email;
+
+    private String phone;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

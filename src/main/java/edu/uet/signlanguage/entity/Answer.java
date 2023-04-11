@@ -21,6 +21,15 @@ public class Answer {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Question question;
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
     public Answer(Answer answer){
         this.setContent(answer.getContent());
         this.setCorrect(answer.getCorrect());

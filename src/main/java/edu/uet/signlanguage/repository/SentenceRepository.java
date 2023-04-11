@@ -13,6 +13,9 @@ public interface SentenceRepository extends JpaRepository<Sentence, Integer> {
     Optional<Sentence> findById(Integer integer);
     //Optional<Sentence> findByUser(User user);
 
+    @Query("SELECT s FROM Sentence s WHERE s.content = ?1 ")
+    Optional<Sentence> findByContent(String str);
+
     List<Sentence> findByUser(User user);
 
     @Query("SELECT s FROM Sentence s WHERE s.user = ?1 AND s.favor = ?2")

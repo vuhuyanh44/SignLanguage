@@ -26,8 +26,10 @@ public class AnswerController {
         );
     }
     @PostMapping()
-    ResponseEntity<ResponseObject> addAnswer(@RequestBody Answer answer){
+    ResponseEntity<ResponseObject> addAnswer(@RequestBody Answer answer,@RequestParam("question_id") int id){
         Answer answer1 = new Answer(answer);
+        Question question = questionRepository.findById(id).orElse(null);
+        answer1.setQuestion(question);
         answerRepository.save(answer1);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK", "Add question successfully", "")
