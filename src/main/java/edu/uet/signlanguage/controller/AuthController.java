@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/api/auth")
 public class AuthController {
     @Autowired
     UserRepository userRepository;
@@ -45,9 +45,11 @@ public class AuthController {
         public ResponseEntity<ResponseObject> authenticateUser(@Validated @RequestBody LoginData loginData) {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginData.getUsername(), loginData.getPassword()));
+            System.out.println(authentication.isAuthenticated());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+            System.out.println(userPrincipal);
             List<String> roles = userPrincipal.getAuthorities().stream()
                     .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
@@ -119,25 +121,15 @@ public class AuthController {
     ResponseEntity<ResponseObject> getUser( @RequestAttribute("userID") int id) {
         User user = userRepository.findById(id).orElse(null);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK vcl","oke",user)
+                new ResponseObject("OK","oke",user)
         );
     }
 
-    @PutMapping(value = "/update/{id}")
-    ResponseEntity<ResponseObject> updateInfo(@RequestBody User user, @PathVariable int id){
-//        User user1 = userRepository.findById(id).orElse(null);
-//        if (user.getEmail() != null){
-//            user1.setEmail(user.getEmail());
-//        }
-//        if (user.getUsername() != null){
-//            user1.setUsername(user.getUsername());
-//        }
-//        if (user.getPhone() != null){
-//            user1.setPhone(user.getPhone());
-//        }
-//        System.out.println(user);
-//        System.out.println(user1);
-//        userRepository.save(user1);
+    @PutMapping(value = "/update")
+    ResponseEntity<ResponseObject> updateInfo(@RequestBody String string, @RequestAttribute("userID") int id){
+            User user = userRepository.findById(id).orElse(null);
+            user.setEmail(string);
+            userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Update user " + id + " successfully", user)
         );

@@ -36,12 +36,17 @@ public class SentenceController {
 //        String jwt = authTokenFilter.parseJwt((jakarta.servlet.http.HttpServletRequest) request);
 //        System.out.println(jwt);
 //        int userId = 2; //jwtUtils.getUserIdFromJwtToken(jwt);
+        Sentence sentence1 = sentenceRepository.findByContent(sentence.getContent()).orElse(null);
+        Boolean result = false;
+        if (sentence1.getFavor() == true){
+            result = true;
+        }
         Sentence sentenceEntity = new Sentence(sentence);
         sentenceEntity.setViewTime(new Timestamp(System.currentTimeMillis()));
         sentenceEntity.setUser(userRepository.findById(id).orElse(null));
         sentenceRepository.save(sentenceEntity);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","add sentence successfully","")
+                new ResponseObject("OK",result.toString(),sentenceEntity)
         );
     }
     @PostMapping("/phrased")
@@ -53,22 +58,22 @@ public class SentenceController {
             char c = input.charAt(i);
             // Kiểm tra ký tự có phải là ký tự Tiếng Việt không
             if ((c >= '\u0041' && c <= '\u005A') || (c >= '\u0061' && c <= '\u007A') || (c >= '\u00C0' && c <= '\u1EF9')) {
-                if(c == 'Ô'|| c == 'ô' ){
-                    result.add("o");
-                    result.add("mu");
-                }else if(c == 'Ê'|| c == 'ê'){
-                    result.add("e");
-                    result.add("mu");
-                }else if(c == 'Ơ'|| c == 'ơ'){
-                    result.add("o");
-                    result.add("rau");
-                }else if(c == 'Ư'|| c == 'ư'){
-                    result.add("u");
-                    result.add("rau");
-                }
-                else{
-                    result.add(String.valueOf(c));
-                }
+//                if(c == 'Ô'|| c == 'ô' ){
+//                    result.add("o");
+//                    result.add("mu");
+//                }else if(c == 'Ê'|| c == 'ê'){
+//                    result.add("e");
+//                    result.add("mu");
+//                }else if(c == 'Ơ'|| c == 'ơ'){
+//                    result.add("o");
+//                    result.add("rau");
+//                }else if(c == 'Ư'|| c == 'ư'){
+//                    result.add("u");
+//                    result.add("rau");
+//                }
+//                else{
+//                    result.add(String.valueOf(c));
+//                }
             }
             // Nếu là ký tự có dấu thì lấy luôn 2 ký tự
             else if (c >= '\u00C0' && c <= '\u1EF9') {
@@ -140,13 +145,13 @@ public class SentenceController {
         );
     }
 
-    @PostMapping("/like")
-    Boolean checkFavour(@RequestBody Sentence sentence){
-        Sentence sentence1 = sentenceRepository.findByContent(sentence.getContent()).orElse(null);
-        Boolean result = false;
-        if (sentence1.getFavor() == true){
-            result = true;
-        }
-        return result;
-    }
+//    @PostMapping("/like")
+//    Boolean checkFavour(@RequestBody Sentence sentence){
+//        Sentence sentence1 = sentenceRepository.findByContent(sentence.getContent()).orElse(null);
+//        Boolean result = false;
+//        if (sentence1.getFavor() == true){
+//            result = true;
+//        }
+//        return result;
+//    }
 }
