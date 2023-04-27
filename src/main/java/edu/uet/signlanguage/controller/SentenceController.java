@@ -53,6 +53,7 @@ public class SentenceController {
     ResponseEntity<ResponseObject> phraseSentence(@RequestBody Sentence sentence){
         Sentence sentence1 = new Sentence(sentence);
         String input = sentence1.getContent();
+        input = input.toLowerCase();
         List<String> result = new ArrayList<>();
         for (String w : input.replaceAll("\\s+","").split("")) {
             result.add(w);
