@@ -54,21 +54,8 @@ public class SentenceController {
         Sentence sentence1 = new Sentence(sentence);
         String input = sentence1.getContent();
         List<String> result = new ArrayList<>();
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            // Kiểm tra ký tự có phải là ký tự Tiếng Việt không
-            if ((c >= '\u0041' && c <= '\u005A') || (c >= '\u0061' && c <= '\u007A') || (c >= '\u00C0' && c <= '\u1EF9')) {
-                result.add(String.valueOf(c));
-            }
-            // Nếu là ký tự có dấu thì lấy luôn 2 ký tự
-            else if (c >= '\u00C0' && c <= '\u1EF9') {
-                result.add(input.substring(i, i + 2));
-                i++;
-            }
-        }
-//        result.toArray(new String[0]);
-        for (int i = 0; i < result.size(); i++){
-            result.set(i,result.get(i).toLowerCase() + ".png");
+        for (String w : input.replaceAll("\\s+","").split("")) {
+            result.add(w);
         }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","phrased", result)
