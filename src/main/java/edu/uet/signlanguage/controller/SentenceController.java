@@ -58,22 +58,7 @@ public class SentenceController {
             char c = input.charAt(i);
             // Kiểm tra ký tự có phải là ký tự Tiếng Việt không
             if ((c >= '\u0041' && c <= '\u005A') || (c >= '\u0061' && c <= '\u007A') || (c >= '\u00C0' && c <= '\u1EF9')) {
-//                if(c == 'Ô'|| c == 'ô' ){
-//                    result.add("o");
-//                    result.add("mu");
-//                }else if(c == 'Ê'|| c == 'ê'){
-//                    result.add("e");
-//                    result.add("mu");
-//                }else if(c == 'Ơ'|| c == 'ơ'){
-//                    result.add("o");
-//                    result.add("rau");
-//                }else if(c == 'Ư'|| c == 'ư'){
-//                    result.add("u");
-//                    result.add("rau");
-//                }
-//                else{
-//                    result.add(String.valueOf(c));
-//                }
+                result.add(String.valueOf(c));
             }
             // Nếu là ký tự có dấu thì lấy luôn 2 ký tự
             else if (c >= '\u00C0' && c <= '\u1EF9') {
@@ -89,6 +74,7 @@ public class SentenceController {
                 new ResponseObject("OK","phrased", result)
         );
     }
+
 
     @GetMapping("/{id}")
     ResponseEntity<ResponseObject> getById(@PathVariable int id){
