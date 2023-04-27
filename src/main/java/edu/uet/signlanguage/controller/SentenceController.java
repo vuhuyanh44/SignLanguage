@@ -138,7 +138,12 @@ public class SentenceController {
     ResponseEntity<ResponseObject> favourSentence(@PathVariable int id){
         Sentence sentence = sentenceRepository.findById(id).orElse(null);
         assert sentence != null;
-        sentence.setFavor(true);
+        if (sentence.getFavor() == false){
+            sentence.setFavor(true);
+        } else {
+            sentence.setFavor(false);
+        }
+
         sentenceRepository.save(sentence);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","update successfully",sentence)

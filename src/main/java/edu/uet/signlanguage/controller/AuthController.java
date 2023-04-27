@@ -1,6 +1,7 @@
 package edu.uet.signlanguage.controller;
 import edu.uet.signlanguage.entity.Role;
 import edu.uet.signlanguage.entity.User;
+import edu.uet.signlanguage.entity.UserDTO;
 import edu.uet.signlanguage.models.request.LoginData;
 import edu.uet.signlanguage.models.response.LoginResponse;
 import edu.uet.signlanguage.models.request.RegisterData;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -80,36 +82,6 @@ public class AuthController {
         System.out.println(strRoles);
         Role userRole = (Role) roleRepository.findByName("ROLE_USER").orElse(null);
         roles.add(userRole);
-//        if (strRoles == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-//                    new ResponseObject("Failed", "Missing role", "")
-//            );
-//        } else {
-//            strRoles.forEach(role -> {
-//                Role selectRole = roleRepository.findById(role).orElse(null);
-//                if (selectRole != null) {
-//                    roles.add(selectRole);
-//                }
-//                switch (role) {
-//                    case "admin":
-//                        Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElse(null);
-//                        roles.add(adminRole);
-//                        break;
-//                    case "factory":
-//                        Role factoryRole = roleRepository.findByName("ROLE_FACTORY").orElse(null);
-//                        roles.add(factoryRole);
-//                        break;
-//                    case "service":
-//                        Role serviceRole = roleRepository.findByName(ERole.ROLE_SERVICE).orElse(null);
-//                        roles.add(serviceRole);
-//                        break;
-//                    case "distribution":
-//                        Role distributionRole = roleRepository.findByName(ERole.ROLE_DISTRIBUTION).orElse(null);
-//                        roles.add(distributionRole);
-//                        break;
-//                }
-//            });
-//        }
         user.setRoles(roles);
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -126,12 +98,45 @@ public class AuthController {
     }
 
     @PutMapping(value = "/update")
-    ResponseEntity<ResponseObject> updateInfo(@RequestBody String string, @RequestAttribute("userID") int id){
-            User user = userRepository.findById(id).orElse(null);
-            user.setEmail(string);
-            userRepository.save(user);
+    ResponseEntity<ResponseObject> updateInfo(@RequestBody UserDTO userDto, @RequestAttribute("userID") int id ){
+            User user1 = userRepository.findById(id).orElse(null);
+            if(userDto.getEmail() != null)
+            user1.setEmail(userDto.getEmail());
+            if(userDto.getPhone() != null)
+            user1.setPhone(userDto.getPhone());
+            if(userDto.getUsername() != null)
+            user1.setUsername(userDto.getUsername());
+            userRepository.save(user1);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Update user " + id + " successfully", user)
+                new ResponseObject("OK","Update user " + id + " successfully" , user1)
         );
     }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseObject> changePassword(@Validated @RequestBody UserDTO changePasswordData) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + userPrincipal.getUsername()));
+        if (!passwordEncoder.matches(changePasswordData.getOldPassword(), user.getPassword())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ResponseObject("Failed", "Incorrect old password", ""));
+        }
+        if (!changePasswordData.getNewPassword().equals(changePasswordData.getRePassword())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ResponseObject("Failed", "Password repeat incorrect", ""));
+        }
+        user.setPassword(passwordEncoder.encode(changePasswordData.getNewPassword()));
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK", "Password changed successfully", ""));
+    }
+
+
+
+
+
+
 }
