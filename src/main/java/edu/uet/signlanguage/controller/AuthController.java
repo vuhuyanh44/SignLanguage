@@ -75,7 +75,7 @@ public class AuthController {
         }
         int id = (int) new Date().getTime();
         User user = new User(id, registerData.getUsername(),
-                passwordEncoder.encode(registerData.getPassword()));
+                passwordEncoder.encode(registerData.getPassword()), registerData.getEmail(), registerData.getPhone());
         System.out.println(user);
         Set<Integer> strRoles = registerData.getRoles();
         Set<Role> roles = new HashSet<>();

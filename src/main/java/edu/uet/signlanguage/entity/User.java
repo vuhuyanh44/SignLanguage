@@ -54,6 +54,14 @@ public class User {
         this.password = password;
     }
 
+    public User( int id, String username, String password, String email, String phone) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phone = phone;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }

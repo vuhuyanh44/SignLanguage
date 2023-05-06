@@ -11,6 +11,8 @@ public class RegisterData {
     private String password;
     private String rePassword;
 
+    private String email;
+    private String phone;
     private Set<Integer> roles;
 
 }

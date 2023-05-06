@@ -38,7 +38,7 @@ public class SentenceController {
 //        int userId = 2; //jwtUtils.getUserIdFromJwtToken(jwt);
         Sentence sentence1 = sentenceRepository.findByContent(sentence.getContent()).orElse(null);
         Boolean result = false;
-        if (sentence1.getFavor() == true){
+        if (sentence1 != null && sentence1.getFavor() == true){
             result = true;
         }
         Sentence sentenceEntity = new Sentence(sentence);
