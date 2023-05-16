@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
@@ -105,9 +107,17 @@ public class SentenceController {
     ResponseEntity<ResponseObject> getFavouriteSentence(@RequestAttribute("userID") int id){
         User user = userRepository.findById(id).orElse(null);
         System.out.println(user.getId()+user.getUsername());
-
+        List<Sentence> list = sentenceRepository.findByUserAndFavor(user,true);
+        Set<String> uniqueContents = new HashSet<>();
+        List<Sentence> filteredList = new ArrayList<>();
+        for (Sentence obj : list) {
+            if (!uniqueContents.contains(obj.getContent())) {
+                uniqueContents.add(obj.getContent());
+                filteredList.add(obj);
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Get favourite list successfully", sentenceRepository.findByUserAndFavor(user,true))
+                new ResponseObject("OK","Get favourite list successfully", filteredList)
         );
     }
 
