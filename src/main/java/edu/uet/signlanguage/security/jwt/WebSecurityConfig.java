@@ -65,7 +65,7 @@ public class WebSecurityConfig {
 //               .requestMatchers("/api/role/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/sentence/*").hasAuthority("ROLE_USER")
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();//.authenticated();
 
         http.authenticationProvider(authenticationProvider());
 

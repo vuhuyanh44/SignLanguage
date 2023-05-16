@@ -9,14 +9,13 @@ import edu.uet.signlanguage.security.jwt.AuthTokenFilter;
 import edu.uet.signlanguage.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping(path = "api/sentence")
@@ -36,14 +35,18 @@ public class SentenceController {
 //        String jwt = authTokenFilter.parseJwt((jakarta.servlet.http.HttpServletRequest) request);
 //        System.out.println(jwt);
 //        int userId = 2; //jwtUtils.getUserIdFromJwtToken(jwt);
-        Sentence sentence1 = sentenceRepository.findByContent(sentence.getContent()).orElse(null);
+        List<Sentence> sentence1 = sentenceRepository.findByContent(sentence.getContent());
         Boolean result = false;
-        if (sentence1 != null && sentence1.getFavor() == true){
-            result = true;
+        for( Sentence sen : sentence1){
+            if (sen != null && sen.getFavor() == true){
+                result = true;
+                break;
+            }
         }
         Sentence sentenceEntity = new Sentence(sentence);
         sentenceEntity.setViewTime(new Timestamp(System.currentTimeMillis()));
         sentenceEntity.setUser(userRepository.findById(id).orElse(null));
+        sentenceEntity.setFavor(result);
         sentenceRepository.save(sentenceEntity);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK",result.toString(),sentenceEntity)
@@ -111,14 +114,27 @@ public class SentenceController {
     @GetMapping("/like/{id}")
     ResponseEntity<ResponseObject> favourSentence(@PathVariable int id){
         Sentence sentence = sentenceRepository.findById(id).orElse(null);
+        List<Sentence> sentence1 = sentenceRepository.findByContent(sentence.getContent());
         assert sentence != null;
         if (sentence.getFavor() == false){
             sentence.setFavor(true);
+            for( Sentence sen : sentence1){
+                if (sen != null){
+                    sen.setFavor(true);
+                }
+            }
         } else {
             sentence.setFavor(false);
+            for( Sentence sen : sentence1){
+                if (sen != null){
+                    sen.setFavor(false);
+                }
+            }
         }
-
         sentenceRepository.save(sentence);
+        for( Sentence sen : sentence1){
+            sentenceRepository.save(sen);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","update successfully",sentence)
         );
